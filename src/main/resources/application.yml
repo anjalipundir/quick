@@ -2,3 +2,18 @@ server:
   port: 8083
   servlet:
     context-path: /sample/api/v1
+
+
+spring:
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
+  jpa:
+    database: POSTGRESQL
+    show-sql: true
+    hibernate:
+      ddl-auto: update
+  datasource:
+    url: jdbc:postgresql://localhost:5432/what_note
+    username: personal
+    password: simple
