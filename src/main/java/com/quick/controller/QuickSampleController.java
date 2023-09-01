@@ -1,6 +1,6 @@
-package org.example.controller;
+package com.quick.controller;
 
-import org.example.model.QuickData;
+import com.quick.model.QuickData;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

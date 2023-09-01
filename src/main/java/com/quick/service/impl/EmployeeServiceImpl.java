@@ -1,9 +1,9 @@
-package org.example.service.impl;
+package com.quick.service.impl;
 
-import org.example.entity.Employee;
-import org.example.model.EmployeeDto;
-import org.example.repository.EmployeeRepository;
-import org.example.service.EmployeeService;
+import com.quick.entity.Employee;
+import com.quick.model.EmployeeDto;
+import com.quick.repository.EmployeeRepository;
+import com.quick.service.EmployeeService;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.springframework.beans.factory.annotation.Autowired;

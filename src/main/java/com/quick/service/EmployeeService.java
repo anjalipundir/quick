@@ -1,6 +1,6 @@
-package org.example.service;
+package com.quick.service;
 
-import org.example.model.EmployeeDto;
+import com.quick.model.EmployeeDto;
 
 import java.util.List;
 

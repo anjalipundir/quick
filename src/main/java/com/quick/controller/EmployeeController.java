@@ -1,7 +1,7 @@
-package org.example.controller;
+package com.quick.controller;
 
-import org.example.model.EmployeeDto;
-import org.example.service.EmployeeService;
+import com.quick.model.EmployeeDto;
+import com.quick.service.EmployeeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

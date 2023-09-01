@@ -1,4 +1,4 @@
-package org.example.model;
+package com.quick.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -7,9 +7,10 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class QuickData {
+public class EmployeeDto {
 
     private String name;
-    private String type;
+    private int salary;
+    private DepartmentDto department;
 
 }

@@ -1,6 +1,6 @@
-package org.example.controller;
+package com.quick.controller;
 
-import org.example.model.QuickData;
+import com.quick.model.QuickData;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
