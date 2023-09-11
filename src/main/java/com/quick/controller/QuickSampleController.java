@@ -1,6 +1,6 @@
 package com.quick.controller;
 
-import com.quick.model.QuickData;
+import com.quick.model.dto.QuickDataDto;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -15,7 +15,7 @@ public class QuickSampleController {
      * Update data
      * Fetch all data
      * Delete data
-     *
+     * ---------
      * Design simple 4 services:
      * /very_quick
      *  POST (create data - Non-Idempotent )
@@ -25,27 +25,29 @@ public class QuickSampleController {
      */
 
     @PostMapping
-    public ResponseEntity<QuickData> createData(QuickData data){
+    public ResponseEntity<QuickDataDto> createData(QuickDataDto data){
         // Real scenario: service request for creation
         return new ResponseEntity<>(data, HttpStatus.CREATED);
     }
 
     @PutMapping
-    public ResponseEntity<QuickData> updateData(QuickData data){
+    public ResponseEntity<QuickDataDto> updateData(QuickDataDto data){
         // Real scenario: service request to update
         return new ResponseEntity<>(data, HttpStatus.OK);
     }
 
     @GetMapping
-    public ResponseEntity<QuickData> getData(){
+    public ResponseEntity<QuickDataDto> getData(){
         // Real scenario: service request to getData
-        return new ResponseEntity<>(new QuickData("sample","quick"), HttpStatus.OK);
+        return new ResponseEntity<>(new QuickDataDto("sample","quick"), HttpStatus.OK);
     }
 
     @DeleteMapping
     public ResponseEntity<String> deleteData(String name){
         // Real scenario: service request for deletion by name
-        return new ResponseEntity<>("Success", HttpStatus.OK);
+        // Sanitizing name
+        name = name.replaceAll("[^a-zA-Z0-9\\s]", "");
+        return new ResponseEntity<>("Successfully deleted : "+ name, HttpStatus.OK);
     }
 
 }

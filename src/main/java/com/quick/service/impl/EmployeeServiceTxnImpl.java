@@ -1,12 +1,13 @@
 package com.quick.service.impl;
 
-import com.quick.entity.Employee;
-import com.quick.model.EmployeeDto;
-import com.quick.service.EmployeeTxnService;
+import com.quick.model.dto.EmployeeDto;
+import com.quick.model.entity.Employee;
 import com.quick.repository.EmployeeRepository;
+import com.quick.service.EmployeeTxnService;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -15,10 +16,10 @@ import java.util.List;
 @Service
 public class EmployeeServiceTxnImpl implements EmployeeTxnService {
 
-    private EmployeeRepository repository;
+    private final EmployeeRepository repository;
 
     @Autowired
-    EmployeeServiceTxnImpl(EmployeeRepository repository){
+    public EmployeeServiceTxnImpl(EmployeeRepository repository){
         this.repository = repository;
     }
     @Override
@@ -29,6 +30,7 @@ public class EmployeeServiceTxnImpl implements EmployeeTxnService {
 
     @Override
     @Transactional
+    @Nullable
     public EmployeeDto saveEmployee(EmployeeDto employeeDto) throws NullPointerException{
         Employee emp = new ModelMapper().map(employeeDto,Employee.class);
         emp = repository.save(emp);

@@ -1,6 +1,6 @@
 package com.quick.controller;
 
-import com.quick.model.EmployeeDto;
+import com.quick.model.dto.EmployeeDto;
 import com.quick.service.EmployeeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -16,7 +16,7 @@ import java.util.List;
 @RequestMapping("/employee")
 public class EmployeeController {
 
-    private EmployeeService employeeService;
+    private final EmployeeService employeeService;
 
     @Autowired
     public EmployeeController(EmployeeService employeeService){
