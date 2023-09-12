@@ -1,0 +1,17 @@
+{
+  "addresses": [
+    {
+      "city": "NY",
+      "country": "USA",
+      "pinCode": 12345,
+      "state": "NY",
+      "streetAddress": "Street 1 NY",
+      "streetAddress2": "Street 2 NY"
+    }
+  ],
+  "department": {
+    "name": "IT"
+  },
+  "name": "Aditi",
+  "salary": 20000
+}

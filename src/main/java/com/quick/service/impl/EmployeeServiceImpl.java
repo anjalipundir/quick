@@ -1,5 +1,6 @@
 package com.quick.service.impl;
 
+import com.quick.model.entity.Address;
 import com.quick.model.entity.Employee;
 import com.quick.model.dto.EmployeeDto;
 import com.quick.repository.EmployeeRepository;
@@ -29,6 +30,14 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Override
     public EmployeeDto saveEmployee(EmployeeDto employeeDto){
         Employee emp = new ModelMapper().map(employeeDto,Employee.class);
+        /*
+         Note: Test this flow when including toString in Employee.
+         Below code was throwing: java.lang.StackOverflowError' exception. Cannot evaluate com.quick.model.entity.Employee.toString()
+        */
+        for(Address add: emp.getAddresses()){
+            if(add.getEmployee() == null)
+                add.setEmployee(emp);
+        }
         emp = repository.save(emp);
         return new ModelMapper().map(emp,EmployeeDto.class);
     }
