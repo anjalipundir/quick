@@ -1,13 +1,11 @@
 package com.quick.model.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import java.util.Set;
 
 @Data
 @Builder
@@ -23,7 +21,4 @@ public class Category {
     private String name;
     private String description;
 
-    @OneToMany(mappedBy = "category")
-    @JsonIgnore
-    private Set<Expense> expenses;
 }

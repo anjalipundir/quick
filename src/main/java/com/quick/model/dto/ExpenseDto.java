@@ -1,20 +1,21 @@
 package com.quick.model.dto;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
-import org.springframework.lang.NonNull;
+import lombok.NoArgsConstructor;
 
 import java.util.Date;
 
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class ExpenseDto {
 
     private Date date;
     private String store;
-    @NonNull
     private String description;
     private String category;
-    @NonNull
-    private int amount;
-    private int discount;
+    private Integer amount;
+    private Integer discount;
 
 }

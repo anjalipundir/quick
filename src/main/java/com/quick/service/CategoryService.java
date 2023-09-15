@@ -2,11 +2,9 @@ package com.quick.service;
 
 import com.quick.model.dto.CategoryDto;
 
-import java.util.Set;
+import java.util.Optional;
 
 public interface CategoryService extends CrudService<CategoryDto, Long> {
 
-    Set<CategoryDto> addAll(Set<CategoryDto> t);
-
-    CategoryDto findByName(String name);
+    Optional<CategoryDto> findByName(String name);
 }

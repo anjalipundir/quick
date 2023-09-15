@@ -1,5 +1,6 @@
 package com.quick.service.impl;
 
+import com.quick.exception.ResourceNotFoundException;
 import com.quick.model.dto.ExpenseDto;
 import com.quick.model.dto.TotalExpenseDto;
 import com.quick.model.entity.Category;
@@ -44,8 +45,36 @@ public class ExpenseServiceImpl implements ExpenseService {
     public ExpenseDto add(ExpenseDto expenseDto) {
         Expense expense = new ModelMapper().map(expenseDto, Expense.class);
         addCategoryInfo(expenseDto.getCategory(), expense);
-        Expense res = expenseRepository.save(expense);
-        return new ModelMapper().map(res,ExpenseDto.class);
+        Expense dbExpense = expenseRepository.save(expense);
+        ExpenseDto response = new ModelMapper().map(dbExpense,ExpenseDto.class);
+        if(dbExpense.getCategory() != null)
+            response.setCategory(dbExpense.getCategory().getName());
+        return response;
+    }
+
+    @Override
+    public ExpenseDto update(Long id, ExpenseDto expenseDto) {
+
+        Expense dbExpense = expenseRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Expense not found with id: "+ id));
+
+        if (expenseDto.getDate() != null)
+            dbExpense.setDate(expenseDto.getDate());
+        if (expenseDto.getAmount() != null)
+            dbExpense.setAmount(expenseDto.getAmount());
+        if (expenseDto.getDiscount() != null)
+            dbExpense.setDiscount(expenseDto.getDiscount());
+        if (expenseDto.getDescription() != null)
+            dbExpense.setDescription(expenseDto.getDescription());
+        if (expenseDto.getStore() != null)
+            dbExpense.setStore(expenseDto.getStore());
+        if(expenseDto.getCategory() != null)
+            addCategoryInfo(expenseDto.getCategory(), dbExpense);
+
+        Expense updatedExpense = expenseRepository.save(dbExpense);
+        ExpenseDto response = new ModelMapper().map(updatedExpense,ExpenseDto.class);
+        if(dbExpense.getCategory() != null)
+            response.setCategory(dbExpense.getCategory().getName());
+        return response;
     }
 
     @Override
@@ -57,12 +86,15 @@ public class ExpenseServiceImpl implements ExpenseService {
     @Transactional
     private void addCategoryInfo(String category, Expense expense) {
         if(!category.isBlank()) {
-            Category dbCategory = categoryRepository.findByName(category);
-            expense.setCategory(dbCategory);
-            Set<Expense> expenses = dbCategory.getExpenses();
-            expenses.add(expense);
-
-            expense.getCategory().setExpenses(expenses);
+            Optional<Category> dbCategory = categoryRepository.findByNameEqualsIgnoreCase(category);
+            if(dbCategory.isEmpty()) {
+                Category cat = new Category();
+                cat.setName(category);
+                Category newCategory  = categoryRepository.save(cat);
+                expense.setCategory(newCategory);
+                return;
+            }
+            expense.setCategory(dbCategory.get());
         }
     }
 

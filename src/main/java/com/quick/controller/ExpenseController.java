@@ -28,6 +28,20 @@ public class ExpenseController {
         this.expenseService = expenseService;
     }
 
+    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Set<ExpenseDto>> addExpenses(@RequestBody Set<ExpenseDto> expenses){
+        Set<ExpenseDto> response = expenseService.addAll(expenses);
+        if(response.isEmpty()) return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @PostMapping(path = "/expense", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ExpenseDto> addExpense(@RequestBody ExpenseDto expense){
+        ExpenseDto response = expenseService.add(expense);
+        if(response == null) return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
     @GetMapping
     public ResponseEntity<Set<ExpenseDto>> getAllExpenses(){
         Set<ExpenseDto> expenses = expenseService.findAll();
@@ -64,20 +78,12 @@ public class ExpenseController {
         return new ResponseEntity<>(expenses, HttpStatus.OK);
     }
 
-    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Set<ExpenseDto>> addExpenses(@RequestBody Set<ExpenseDto> expenses){
-        Set<ExpenseDto> response = expenseService.addAll(expenses);
-        if(response.isEmpty()) return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        return new ResponseEntity<>(response, HttpStatus.OK);
-    }
-
-    @PostMapping(path = "/expense", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ExpenseDto> addExpense(@RequestBody ExpenseDto expense){
-        ExpenseDto response = expenseService.add(expense);
+    @PatchMapping(path = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ExpenseDto> addExpense(@PathVariable Long id, @RequestBody ExpenseDto expense){
+        ExpenseDto response = expenseService.update(id, expense);
         if(response == null) return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
-
     @DeleteMapping("/{id}")
     public ResponseEntity<ExpenseDto> deleteExpense(@PathVariable Long id){
         expenseService.deleteById(id);

@@ -11,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Optional;
 import java.util.Set;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
@@ -25,9 +26,20 @@ public class CategoryController {
         this.categoryService = categoryService;
     }
 
+    @ApiOperation(value = "Add new Category", response = CategoryDto.class, responseContainer = "Set", consumes= APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
+    @ApiResponses(value = {
+            @ApiResponse(code = 201, message = "Created|OK"),
+            @ApiResponse(code = 404, message = "Not Found")})
+    @PostMapping(consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
+    public ResponseEntity<CategoryDto> addCategory(@RequestBody CategoryDto category){
+        CategoryDto response = categoryService.add(category);
+        if(response == null) return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
     @ApiOperation(value = "Search all categories", response = CategoryDto.class, responseContainer = "Set", produces = APPLICATION_JSON_VALUE)
     @ApiResponses(value = {
-            @ApiResponse(code = 201, message = "Created"),
+            @ApiResponse(code = 201, message = "OK"),
             @ApiResponse(code = 404, message = "Not Found")})
     @GetMapping
     public ResponseEntity<Set<CategoryDto>> getAllCategories(){
@@ -40,7 +52,7 @@ public class CategoryController {
 
     @ApiOperation(value = "Search category by id", response = CategoryDto.class, produces = APPLICATION_JSON_VALUE)
     @ApiResponses(value = {
-            @ApiResponse(code = 201, message = "Created"),
+            @ApiResponse(code = 201, message = "OK"),
             @ApiResponse(code = 404, message = "Not Found")})
     @GetMapping(value = "/{id}")
     public ResponseEntity<CategoryDto> getCategoryById(@PathVariable Long id){
@@ -51,41 +63,28 @@ public class CategoryController {
         return new ResponseEntity<>(category, HttpStatus.OK);
     }
 
-    @ApiOperation(value = "Search Categories By Name", response = CategoryDto.class, responseContainer = "Set", produces = APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Search categories by name", response = CategoryDto.class, responseContainer = "Set", produces = APPLICATION_JSON_VALUE)
     @ApiResponses(value = {
-            @ApiResponse(code = 201, message = "Created"),
+            @ApiResponse(code = 201, message = "OK"),
             @ApiResponse(code = 404, message = "Not Found")})
-    @GetMapping(path = "/{description}", produces = APPLICATION_JSON_VALUE)
+    @GetMapping(path = "/{name}", produces = APPLICATION_JSON_VALUE)
     public ResponseEntity<CategoryDto> getCategoryByName(@ApiParam(value = "name" , required=true) @PathVariable String name){
-        CategoryDto category = categoryService.findByName(name);
-        if (category == null) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
-        return new ResponseEntity<>(category, HttpStatus.OK);
+        Optional<CategoryDto> category = categoryService.findByName(name);
+        return category
+                .map(categoryDto -> new ResponseEntity<>(categoryDto, HttpStatus.OK))
+                .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
-    @ApiOperation(value = "Add new Categories", response = CategoryDto.class, responseContainer = "Set", consumes= APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Update a Category", response = CategoryDto.class, responseContainer = "Set", consumes= APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
     @ApiResponses(value = {
-            @ApiResponse(code = 201, message = "Created"),
+            @ApiResponse(code = 201, message = "Updated|OK"),
             @ApiResponse(code = 404, message = "Not Found")})
-    @PostMapping(consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
-    public ResponseEntity<Set<CategoryDto>> addCategories(@RequestBody Set<CategoryDto> categories){
-        Set<CategoryDto> response = categoryService.addAll(categories);
-        if(response.isEmpty()) return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        return new ResponseEntity<>(response, HttpStatus.OK);
-    }
-
-    @ApiOperation(value = "Add new Category", response = CategoryDto.class, responseContainer = "Set", consumes= APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
-    @ApiResponses(value = {
-            @ApiResponse(code = 201, message = "Created|OK"),
-            @ApiResponse(code = 404, message = "Not Found")})
-    @PostMapping(path = "/category", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
-    public ResponseEntity<CategoryDto> addCategory(@RequestBody CategoryDto category){
-        CategoryDto response = categoryService.add(category);
+    @PatchMapping(path = "/{id}", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
+    public ResponseEntity<CategoryDto> updateCategory(@PathVariable long id, @RequestBody CategoryDto category){
+        CategoryDto response = categoryService.update(id, category);
         if(response == null) return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
-
     @ApiOperation(value = "Delete a Category By Id")
     @DeleteMapping("/{id}")
     public void deleteCategory(@ApiParam(value = "id" , required=true) @PathVariable Long id){

@@ -4,6 +4,7 @@ import com.quick.exception.RequestConflictException;
 import com.quick.model.dto.CategoryDto;
 import com.quick.model.entity.Category;
 import com.quick.repository.CategoryRepository;
+import com.quick.repository.ExpenseRepository;
 import com.quick.service.CategoryService;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -12,7 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.lang.reflect.Type;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -22,35 +22,40 @@ import java.util.Set;
 public class CategoryServiceImpl implements CategoryService {
 
     private final CategoryRepository categoryRepository;
+    private final ExpenseRepository expenseRepository;
 
     @Autowired
-    public CategoryServiceImpl(CategoryRepository categoryRepository){
+    public CategoryServiceImpl(CategoryRepository categoryRepository, ExpenseRepository expenseRepository){
         this.categoryRepository = categoryRepository;
-    }
-
-    @Override
-    public Set<CategoryDto> addAll(Set<CategoryDto> categoryDtos) {
-        Set<CategoryDto> response = new HashSet<>();
-        categoryDtos.forEach(categoryDto -> {
-            CategoryDto res = add(categoryDto);
-            if(res != null){
-                response.add(res);
-            }else{
-                log.warn("Data Insertion Failed For:"+ categoryDto.toString());
-            }
-        });
-        return response;
+        this.expenseRepository = expenseRepository;
     }
 
     @Override
     public CategoryDto add(CategoryDto categoryDto) {
         Category category = new ModelMapper().map(categoryDto,Category.class);
-        Category categoryByName = categoryRepository.findByName(category.getName());
-        if(categoryByName == null){
+        Optional<Category> categoryByName = categoryRepository.findByNameEqualsIgnoreCase(category.getName());
+        if(categoryByName.isEmpty()){
             Category response = categoryRepository.save(category);
             return new ModelMapper().map(response, CategoryDto.class);
         }else{
             throw new RequestConflictException("Category Already Exists");
+        }
+    }
+
+    @Override
+    public CategoryDto update(Long id, CategoryDto categoryDto) {
+        Category category = new ModelMapper().map(categoryDto,Category.class);
+        Optional<Category> categoryById = categoryRepository.findById(id);
+        if(categoryById.isPresent()){
+            Category updatedCategory = categoryById.get();
+            if(category.getName() != null)
+                updatedCategory.setName(category.getName());
+            if(category.getDescription() != null)
+                updatedCategory.setDescription(category.getDescription());
+            Category response = categoryRepository.save(updatedCategory);
+            return new ModelMapper().map(response, CategoryDto.class);
+        }else{
+            throw new RequestConflictException("Category not found for Id: "+ id);
         }
     }
 
@@ -67,26 +72,30 @@ public class CategoryServiceImpl implements CategoryService {
         return new ModelMapper().map(category,CategoryDto.class);
     }
 
-
-
     @Override
-    public CategoryDto findByName(String name) {
-        Category category = categoryRepository.findByName(name);
-        return new ModelMapper().map(category,CategoryDto.class);
+    public Optional<CategoryDto> findByName(String name) {
+        Optional<Category> category = categoryRepository.findByNameEqualsIgnoreCase(name);
+        Type type = new TypeToken<Optional<CategoryDto>>(){}.getType();
+        return new ModelMapper().map(category, type);
     }
 
     @Override
     public void deleteById(Long id) {
         Optional<Category> category = categoryRepository.findById(id);
-        if(category.isPresent()) {
-            if(category.get().getExpenses().isEmpty()) {
+
+        // Category is linked to Expenses thus checking if category exists in expense table
+        if (category.isPresent()) {
+            Long countOfExpenses = expenseRepository.countExpenseByCategory(category.get());
+            if (countOfExpenses == null || countOfExpenses == 0) {
                 categoryRepository.deleteById(id);
-            }else{
-                log.warn("User tried to delete a category that has expenses. Delete the expenses before deleting:"+ category);
+                return;
             }
-        }else{
-            log.info("User tried to delete a category that does not exist: "+ category);
+            log.info("User tried to delete a category: " + category + ", that is linked to expenses. " +
+                    "User must delete or unlink expenses before deleting category.");
+            return;
         }
+        log.info("User tried to delete a category that does not exist: " + category);
+
     }
 
 
