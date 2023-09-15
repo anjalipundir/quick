@@ -1,0 +1,13 @@
+[
+  {
+    "amount": 20,
+    "category": {
+      "description": "Vegetables",
+      "name": "Vegetables"
+    },
+    "date": "2023-09-14T12:41:30.173Z",
+    "description": "Multiple Vegetables",
+    "discount": 0,
+    "store": "Patel"
+  }
+]
