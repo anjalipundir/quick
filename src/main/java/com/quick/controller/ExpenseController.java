@@ -79,15 +79,14 @@ public class ExpenseController {
     }
 
     @PatchMapping(path = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ExpenseDto> addExpense(@PathVariable Long id, @RequestBody ExpenseDto expense){
+    public ResponseEntity<ExpenseDto> updateExpense(@PathVariable Long id, @RequestBody ExpenseDto expense){
         ExpenseDto response = expenseService.update(id, expense);
         if(response == null) return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
     @DeleteMapping("/{id}")
-    public ResponseEntity<ExpenseDto> deleteExpense(@PathVariable Long id){
+    public void deleteExpense(@PathVariable Long id){
         expenseService.deleteById(id);
-        return new ResponseEntity<>(HttpStatus.OK);
     }
 
 
